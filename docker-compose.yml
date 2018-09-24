@@ -1,0 +1,69 @@
+version: '3'
+services:
+  nginx:
+    container_name: ${APP_NAME}_server_nginx
+    build:
+      context: ./src/nginx
+      args:
+        SERVER_NAME: ${SERVER_NAME}
+        DIR_BASE: ${DIR_BASE}
+        SERVER_ROOT: ${SERVER_ROOT}
+        USER_ID: ${USER_ID}
+    ports:
+      - "80:80"
+    volumes:
+      - ./src/app:${DIR_BASE}
+      - ./src/nginx/log:/var/log/nginx/
+    links:
+      - php
+
+  php:
+    container_name: ${APP_NAME}_server_php
+    build:
+      context: ./src/php-fpm
+      args:
+        USER_ID: ${USER_ID}
+        DIR_BASE: ${DIR_BASE}
+        HTTP_PROXY: "${HTTP_PROXY}"
+        GITHUB_OAUTH: ${GITHUB_OAUTH}
+    tty: true
+    environment:
+      HTTP_PROXY: ${HTTP_PROXY}
+      PGSQL_HOST: ${PGSQL_HOST}
+      PGSQL_DB_NAME: ${PGSQL_DB_NAME}
+      PGSQL_USERNAME: ${PGSQL_USERNAME}
+      PGSQL_PASSWORD: ${PGSQL_PASSWORD}
+      PGSQL_CHARSET: ${PGSQL_CHARSET}
+      PGSQL_SCHEMA: ${PGSQL_SCHEMA}
+
+    volumes:
+      - ./src/app:${DIR_BASE}
+      - ./src/php-fpm/log:/var/log/php-fpm/
+    ports:
+      - "9000:9000"
+
+  database_dev:
+      container_name: ${APP_NAME}_server_database_dev
+      restart: always
+      build:
+        context: ./src/database/dev
+        args:
+          USER_ID: ${USER_ID}
+      ports:
+        - '5432:5432'
+      volumes:
+        - ./src/database/psql_dump.sql:/var/lib/postgresql/docker-entrypoint-initdb.d/psql_dump.sql
+        - ./src/database/dev/data:/var/lib/postgresql/data
+
+  database_test:
+      container_name: ${APP_NAME}_server_database_test
+      restart: always
+      build:
+        context: ./src/database/test
+        args:
+          USER_ID: ${USER_ID}
+      ports:
+        - '54321:5432'
+      volumes:
+        - ./src/database/psql_dump.sql:/var/lib/postgresql/docker-entrypoint-initdb.d/psql_dump.sql
+        - ./src/database/test/data:/var/lib/postgresql/data
