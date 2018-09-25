@@ -6,10 +6,16 @@ RUN apt-get update && \
         apt-utils \
         g++ \
         unzip \
-        libicu-dev
+        libicu-dev \
+        libpq-dev
+
+RUN docker-php-ext-configure \
+    pgsql -with-pgsql=/usr/local/pgsql
 
 RUN docker-php-ext-install \
-        intl
+    intl \
+    pdo \
+    pdo_pgsql
 
 # Install system packages for PHP extensions recommended for Yii 2.0 Framework
 # ENV DEBIAN_FRONTEND=noninteractive
