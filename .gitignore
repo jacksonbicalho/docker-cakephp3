@@ -1,3 +1,2 @@
-!.keep
-
+.env
 src/database/*/data/
