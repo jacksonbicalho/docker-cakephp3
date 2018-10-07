@@ -42,28 +42,19 @@ services:
     ports:
       - "9000:9000"
 
-  database_dev:
-      container_name: ${APP_NAME}_server_database_dev
-      restart: always
-      build:
-        context: ./src/database/dev
-        args:
-          USER_ID: ${USER_ID}
-      ports:
-        - '5432:5432'
-      volumes:
-        - ./src/database/psql_dump.sql:/var/lib/postgresql/docker-entrypoint-initdb.d/psql_dump.sql
-        - ./src/database/dev/data:/var/lib/postgresql/data
+  sass:
+    build:
+      context: ./src/sass
+      args:
+        USER_ID: ${USER_ID}
+    volumes:
+      - ./src/app/webroot:/app
 
-  database_test:
-      container_name: ${APP_NAME}_server_database_test
-      restart: always
-      build:
-        context: ./src/database/test
-        args:
-          USER_ID: ${USER_ID}
-      ports:
-        - '54321:5432'
-      volumes:
-        - ./src/database/psql_dump.sql:/var/lib/postgresql/docker-entrypoint-initdb.d/psql_dump.sql
-        - ./src/database/test/data:/var/lib/postgresql/data
+  node:
+    build:
+      context: ./src/node
+      args:
+        USER_ID: ${USER_ID}
+        DIR_BASE: ${DIR_BASE}
+    volumes:
+      - ./src/app:/src

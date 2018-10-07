@@ -36,6 +36,12 @@ RUN mkdir /.npm
 RUN chown -R $USER_ID:$USER_ID /.config
 RUN chown -R $USER_ID:$USER_ID /.npm
 
+RUN touch /.npmrc
+RUN chown -R $USER_ID:$USER_ID /.npmrc
+ENV NPM_CONFIG_USERCONFIG=/.npmrc
+
+RUN npm config set prefix $DIR_BASE/webroot
+
 # Composer PHP
 RUN curl -sS https://getcomposer.org/installer | \
   php -- --install-dir=/usr/local/bin --filename=composer

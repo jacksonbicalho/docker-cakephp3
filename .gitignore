@@ -1,2 +1,6 @@
 .env
 src/database/*/data/
+src/nginx/log/
+!.keep
+
+src/.sass-cache/
