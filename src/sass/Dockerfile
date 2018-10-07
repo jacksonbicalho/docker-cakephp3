@@ -8,3 +8,6 @@ COPY ./docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["sass", "--watch", "sass:css","--style", "compressed" ]
+
+ARG USER_ID
+USER $USER_ID
